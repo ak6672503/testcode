@@ -215,6 +215,7 @@
     <None Include="res\Test.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\Test.ico" />
     <Image Include="res\TestDoc.ico" />
     <Image Include="res\Toolbar.bmp" />

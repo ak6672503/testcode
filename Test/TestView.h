@@ -1,7 +1,7 @@
 ﻿
 // TestView.h: CTestView 类的接口
 //
-
+#include "Resource.h"
 #pragma once
 
 
@@ -18,6 +18,9 @@ public:
 // 操作
 public:
 
+private:
+	CBitmap bitmap;
+	int m_nWidth;
 // 重写
 public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
@@ -49,6 +52,8 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 private:
 	CPoint m_ptOrign; //保留鼠标左键单击的坐标位置，以便在打字的时候显示
+public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 #ifndef _DEBUG  // TestView.cpp 中的调试版本

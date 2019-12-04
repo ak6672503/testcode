@@ -30,6 +30,7 @@ BEGIN_MESSAGE_MAP(CTestView, CView)
 	ON_WM_CHAR()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_CREATE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CTestView 构造/析构
@@ -38,7 +39,7 @@ CTestView::CTestView() noexcept
 {
 	m_strLine = "";
 	m_ptOrign = 0;
-
+	m_nWidth = 0;
 }
 
 CTestView::~CTestView()
@@ -55,14 +56,34 @@ BOOL CTestView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CTestView 绘图
 
-void CTestView::OnDraw(CDC* /*pDC*/)
+void CTestView::OnDraw(CDC* pDC)
 {
 	CTestDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
-	// TODO: 在此处为本机数据添加绘制代码
+
+	CString str;
+	str = _T("VC++ 深入编程");
+	pDC->TextOut(50, 50, str);
+
+	CSize sz = pDC->GetTextExtent(str);
+	str.LoadString(IDS_STRING101);
+	pDC->TextOut(0, 200, str);
+
+	pDC->BeginPath();
+	pDC->Rectangle(50, 50, 50 + sz.cx, 50 + sz.cy);
+	pDC->EndPath();
+	pDC->SelectClipPath(RGN_AND);
+
+	for (int i = 0; i < 300; i += 10) {
+		pDC->MoveTo(0,i);
+		pDC->LineTo(300,i);
+		pDC->MoveTo( i,0);
+		pDC->LineTo( i,300);
+	}
+
 }
 
 
@@ -114,6 +135,11 @@ void CTestView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CClientDC dc(this); //创建设备描述表
 	TEXTMETRIC tm; //定义文本信息结构体变量
 	dc.GetTextMetrics(&tm); //获取设备描述表中的文本信息
+	CFont font;
+	font.CreatePointFont(300, _T("楷体"), NULL);
+	CFont* pOldFont = dc.SelectObject(&font);
+	
+
 	if (0x0d == nChar) {
 		m_strLine.Empty();
 		m_ptOrign.y += tm.tmHeight;
@@ -136,7 +162,7 @@ void CTestView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	pt.y = m_ptOrign.y;
 	SetCaretPos(pt);
 	dc.TextOut(m_ptOrign.x, m_ptOrign.y, m_strLine);
-	
+	dc.SelectObject(pOldFont);
 
 
 	CView::OnChar(nChar, nRepCnt, nFlags);
@@ -159,6 +185,47 @@ int CTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
+	bitmap.LoadBitmapW(IDB_BITMAP1);
+	CreateCaret(&bitmap);
+	ShowCaret();
 
+	SetTimer(1, 100, NULL);
 	return 0;
+}
+
+
+void CTestView::OnTimer(UINT_PTR nIDEvent)
+{
+
+	m_nWidth += 5;
+	CClientDC dc(this);
+	TEXTMETRIC tm;
+	dc.GetTextMetrics(&tm);
+	CRect rect;
+	rect.left = 0;
+	rect.top = 200;
+	rect.right = m_nWidth;
+	rect.bottom = rect.top + tm.tmHeight;
+	dc.SetTextColor(RGB(255, 0, 0));
+	CString str;
+	str.LoadStringW(IDS_STRING101);
+	dc.DrawText(str, rect, DT_LEFT);
+
+
+	rect.top = 150;
+
+	rect.bottom = rect.top + tm.tmHeight;
+
+	dc.DrawText(str, rect, DT_RIGHT);
+
+
+
+	CSize sz = dc.GetTextExtent(str);
+	if (m_nWidth > sz.cx) {
+		m_nWidth = 0;
+		dc.SetTextColor(RGB(0, 255, 0));
+		dc.TextOutW(0, 200, str);
+	}
+
+	CView::OnTimer(nIDEvent);
 }

@@ -17,7 +17,7 @@
 #define new DEBUG_NEW
 #endif
 
-
+//纯粹测试一下
 // CTestView
 
 IMPLEMENT_DYNCREATE(CTestView, CView)

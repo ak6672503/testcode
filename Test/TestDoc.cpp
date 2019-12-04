@@ -1,7 +1,7 @@
 ﻿
 // TestDoc.cpp: CTestDoc 类的实现
 //
-
+//测试测试更改
 #include "pch.h"
 #include "framework.h"
 // SHARED_HANDLERS 可以在实现预览、缩略图和搜索筛选器句柄的
